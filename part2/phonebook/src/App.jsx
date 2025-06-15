@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
-import axios from 'axios'
+
+import numberHandling from './services/numbers'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -12,38 +13,36 @@ const App = () => {
 
   useEffect(() => {
       console.log('effect')
-      axios
-        .get('http://localhost:3001/persons')
-        .then(response => {
-            console.log('promise fulfilled')
-            setPersons(response.data)
-            })
+      numberHandling
+        .getAll()
+        .then(response => setPersons(response))
       }, [])
 
-  const namesToShow = persons.filter( person => person.name.toUpperCase().includes(newFilter.toUpperCase() ) )
+  const handleSubmit = (event) => numberHandling.addNewPerson(event, persons, setPersons, newName, setNewName, newNumber, setNewNumber)
 
-  const addNewPerson = (event) => {
-      event.preventDefault()
-
-      if (persons.find( (person) => person.name === newName )) {
-          window.alert(`${newName} is already added to phonebook`)
-      } else {
-          const addName = { name: newName, number: newNumber, id: String(persons.length + 1) }
-          setPersons(persons.concat(addName))
-          setNewName('')
-          setNewNumber('')
+  const deleteNumber = (p) => {
+      if (window.confirm(`Delete ${p.name}`)) {
+          numberHandling.deleteNumber(p.id)
+          setPersons(persons.filter(person => person.id !== p.id))
       }
-
   }
+
+  const namesToShow = persons.filter( person => person.name.toUpperCase().includes(newFilter.toUpperCase() ) )
 
   return (
     <div>
       <h2>Phonebook</h2>
       <Filter value={newFilter} setNewFilter={setNewFilter} />
       <h2>add a new number</h2>
-      <PersonForm onSubmit={addNewPerson} newName={newName} setNewName={setNewName} newNumber={newNumber} setNewNumber={setNewNumber} />
+      <PersonForm
+            onSubmit={handleSubmit}
+            newName={newName}
+            setNewName={setNewName}
+            newNumber={newNumber}
+            setNewNumber={setNewNumber}
+        />
       <h2>Numbers</h2>
-      <Persons names={namesToShow} />
+      <Persons names={namesToShow} deleteNumber={deleteNumber} />
     </div>
   )
 }
