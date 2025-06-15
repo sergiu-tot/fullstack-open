@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 
 import numberHandling from './services/numbers'
 
@@ -10,28 +11,33 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
 
+  // load initial list of persons
   useEffect(() => {
-      console.log('effect')
       numberHandling
         .getAll()
         .then(response => setPersons(response))
       }, [])
 
-  const handleSubmit = (event) => numberHandling.addNewPerson(event, persons, setPersons, newName, setNewName, newNumber, setNewNumber)
+  // handle form submit, with parameters so that I can access the states
+  const handleSubmit = event => numberHandling.addNewPerson(event, persons, setPersons, newName, setNewName, newNumber, setNewNumber)
 
-  const deleteNumber = (p) => {
-      if (window.confirm(`Delete ${p.name}`)) {
-          numberHandling.deleteNumber(p.id)
-          setPersons(persons.filter(person => person.id !== p.id))
+  // delete a number by id
+  const deleteNumber = person => {
+      if (window.confirm(`Delete ${person.name}`)) {
+          numberHandling.deleteNumber(person.id)
+          setPersons(persons.filter(p => p.id !== person.id))
       }
   }
 
+  // filter the names to be shown
   const namesToShow = persons.filter( person => person.name.toUpperCase().includes(newFilter.toUpperCase() ) )
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter value={newFilter} setNewFilter={setNewFilter} />
       <h2>add a new number</h2>
       <PersonForm

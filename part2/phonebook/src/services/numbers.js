@@ -3,23 +3,23 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3001/persons'
 
 const getAll = () => {
-    const request = axios.get(baseUrl)
-    return request.then(response => response.data)
+    const req = axios.get(baseUrl)
+    return req.then(resp => resp.data)
 }
 
-const addNumber = (person) => {
-    const request = axios.post(baseUrl, person)
-    return request.then(response => response.data)
+const addNumber = person => {
+    const req = axios.post(baseUrl, person)
+    return req.then(resp => resp.data)
 }
 
 const deleteNumber = id => {
-    const request = axios.delete(`${baseUrl}/${id}`)
-    return request.then(response => response.data)
+    const req = axios.delete(`${baseUrl}/${id}`)
+    return req.then(resp => resp.data)
 }
 
 const updateNumber = person => {
-    const request = axios.put(`${baseUrl}/${person.id}`, person)
-    return request.then(response => response.data)
+    const req = axios.put(`${baseUrl}/${person.id}`, person)
+    return req.then(resp => resp.data)
 }
 
 const addNewPerson = async (event, persons, setPersons, newName, setNewName, newNumber, setNewNumber) => {
