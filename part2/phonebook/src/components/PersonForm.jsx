@@ -2,7 +2,7 @@ const AddInput = ({text, value, setValue}) => <div>{text}: <input value={value} 
 
 const AddButton = () => <button type="submit">add</button>
 
-const PersonForm = ({onSubmit, newName, setNewName, newNumber, setNewNumber, persons}) => {
+const PersonForm = ({onSubmit, newName, setNewName, newNumber, setNewNumber}) => {
     return (
         <form onSubmit={onSubmit}>
             <AddInput text="name" value={newName} setValue={setNewName} />

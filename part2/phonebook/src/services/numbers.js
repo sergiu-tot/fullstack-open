@@ -22,7 +22,7 @@ const updateNumber = person => {
     return req.then(resp => resp.data)
 }
 
-const addNewPerson = async (event, persons, setPersons, newName, setNewName, newNumber, setNewNumber) => {
+const addNewPerson = async (event, persons, setPersons, newName, setNewName, newNumber, setNewNumber, errorMessage, setErrorMessage, successMessage, setSuccessMessage) => {
     event.preventDefault()
 
     const findPerson = persons.find( person => person.name === newName )
@@ -30,11 +30,19 @@ const addNewPerson = async (event, persons, setPersons, newName, setNewName, new
     if (findPerson) {
         findPerson.number = newNumber
         if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-            updateNumber(findPerson).then(r => {
-              console.log('ok')
+            updateNumber(findPerson)
+            .then(r => {
               setPersons(persons.map(p => p === findPerson ? findPerson : p))
               setNewName('')
               setNewNumber('')
+            })
+            .then(() => {
+                setSuccessMessage(`'${findPerson.name}' was updated`)
+                setTimeout(() => { setSuccessMessage(null) }, 5000)
+            })
+            .catch(error => {
+                setErrorMessage(`Could not update '${findPerson.name}'`)
+                setTimeout(() => { setErrorMessage(null) }, 5000)
             })
         }
     } else {
@@ -43,6 +51,14 @@ const addNewPerson = async (event, persons, setPersons, newName, setNewName, new
             setPersons(persons.concat(r))
             setNewName('')
             setNewNumber('')
+        })
+        .then(() => {
+            setSuccessMessage(`'${addName.name}' was added`)
+            setTimeout(() => { setSuccessMessage(null) }, 5000)
+        })
+        .catch(error => {
+            setErrorMessage(`Could not add '${addName.name}'`)
+            setTimeout(() => { setErrorMessage(null) }, 5000)
         })
     }
 

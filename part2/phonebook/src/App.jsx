@@ -12,6 +12,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [successMessage, setSuccessMessage] = useState(null)
 
   // load initial list of persons
   useEffect(() => {
@@ -21,12 +22,24 @@ const App = () => {
       }, [])
 
   // handle form submit, with parameters so that I can access the states
-  const handleSubmit = event => numberHandling.addNewPerson(event, persons, setPersons, newName, setNewName, newNumber, setNewNumber)
+  const handleSubmit = event => numberHandling.addNewPerson(event, persons, setPersons,
+                                                            newName, setNewName,
+                                                            newNumber, setNewNumber,
+                                                            errorMessage, setErrorMessage,
+                                                            successMessage, setSuccessMessage)
 
   // delete a number by id
   const deleteNumber = person => {
       if (window.confirm(`Delete ${person.name}`)) {
           numberHandling.deleteNumber(person.id)
+              .then(() => {
+                setSuccessMessage(`'${person.name}' was removed from server`)
+                setTimeout(() => { setSuccessMessage(null) }, 5000)
+              })
+              .catch(error => {
+                  setErrorMessage(`Could not delete '${person.name}'`)
+                  setTimeout(() => { setErrorMessage(null) }, 5000)
+              })
           setPersons(persons.filter(p => p.id !== person.id))
       }
   }
@@ -37,7 +50,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={errorMessage} />
+      <Notification message={errorMessage} type="error" />
+      <Notification message={successMessage} type="success" />
       <Filter value={newFilter} setNewFilter={setNewFilter} />
       <h2>add a new number</h2>
       <PersonForm
